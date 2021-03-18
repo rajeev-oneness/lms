@@ -37,15 +37,17 @@ class BannerController extends Controller
    {
        if(Auth::check()) {
         $req->validate([
-            'bannerimage' => 'required | mimes:jpg,jpeg,png,bmp,tiff | max:4096',
+            'bannerimage' => 'required | mimes:jpg,jpeg,png,bmp,tiff',
         ],$messages = [   
-            'mimes' => 'Please insert image only',
-            'max'   => 'Image should be less than 4 MB'
+            'mimes' => 'Please insert image only'
         ]);
            $banner = new Banner;
            if($req->hasFile('bannerimage')) {
-               $req->bannerimage->store('banner/img', 'public');
-               $banner->image = $req->bannerimage->hashName();
+            $ext = $req->bannerimage->getClientOriginalExtension();
+            $time = time();
+            $fileName = hash('ripemd128', $time).$ext;
+            $banner->image = $fileName;
+            $req->bannerimage->storeAs('banner/img', $fileName,'public');
            }
            $banner->save();
            $req->session()->flash('bannerAdd', 'The banner is added ssuccessfully!');
@@ -61,15 +63,17 @@ class BannerController extends Controller
    public function update(request $req) {
        if(Auth::check()) {
         $req->validate([
-            'bannerimage' => 'mimes:jpg,jpeg,png,bmp,tiff | max:4096',
+            'bannerimage' => 'mimes:jpg,jpeg,png,bmp,tiff',
         ],$messages = [   
-            'mimes' => 'Please insert image only',
-            'max'   => 'Image should be less than 4 MB'
+            'mimes' => 'Please insert image only'
         ]);
            $banner = Banner::find($req->input('bannerId'));
            if($req->hasFile('bannerimage')) {
-               $req->bannerimage->store('banner/img', 'public');
-               $banner->image = $req->bannerimage->hashName();
+            $ext = $req->bannerimage->getClientOriginalExtension();
+            $time = time();
+            $fileName = hash('ripemd128', $time).$ext;
+            $banner->image = $fileName;
+            $req->bannerimage->storeAs('banner/img', $fileName,'public');
            }
            $banner->save();
            $req->session()->flash('bannerEdit', 'The banner is edited ssuccessfully!');

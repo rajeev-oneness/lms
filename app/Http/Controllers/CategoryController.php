@@ -37,9 +37,9 @@ class CategoryController extends Controller
    {
        if(Auth::check()) {
         $req->validate([
-            'name' => 'required | min:5 | regex:/^[a-zA-Z\s]*$/',
+            'name' => 'required | regex:/^[a-zA-Z\s]*$/',
             'categoryimage' => 'required | mimes:jpg,jpeg,png,bmp,tiff | max:4096',
-            'shortdescription' => 'required | min:20 | regex:/^[a-zA-Z\s]*$/'
+            'shortdescription' => 'required | regex:/^[a-zA-Z\s]*$/'
         ],$messages = [   
             'regex' => 'Only accepts alphabates',
             'mimes' => 'Please insert image only',
@@ -49,8 +49,11 @@ class CategoryController extends Controller
            $category->name = $req->input('name');
            $category->short_description = $req->input('shortdescription');
            if($req->hasFile('categoryimage')) {
-               $req->categoryimage->store('category/img', 'public');
-               $category->image = $req->categoryimage->hashName();
+               $ext = $req->categoryimage->getClientOriginalExtension();
+               $time = time();
+               $fileName = hash('ripemd128', $time).$ext;
+               $category->image = $fileName;
+               $req->categoryimage->storeAs('category/img', $fileName,'public');
            }
            $category->save();
            $req->session()->flash('categoryAdd', 'The category is added ssuccessfully!');
@@ -66,9 +69,9 @@ class CategoryController extends Controller
    public function update(request $req) {
        if(Auth::check()) {
         $req->validate([
-            'name' => 'required | min:5 | regex:/^[a-zA-Z\s]*$/',
+            'name' => 'required | regex:/^[a-zA-Z\s]*$/',
             'categoryimage' => 'mimes:jpg,jpeg,png,bmp,tiff | max:4096',
-            'shortdescription' => 'required | min:20 | regex:/^[a-zA-Z\s]*$/'
+            'shortdescription' => 'required | regex:/^[a-zA-Z\s]*$/'
         ],$messages = [   
             'regex' => 'Only accepts alphabates',
             'mimes' => 'Please insert image only',
@@ -78,8 +81,11 @@ class CategoryController extends Controller
            $category->name = $req->input('name');
            $category->short_description = $req->input('shortdescription');
            if($req->hasFile('categoryimage')) {
-               $req->categoryimage->store('category/img', 'public');
-               $category->image = $req->categoryimage->hashName();
+                $ext = $req->categoryimage->getClientOriginalExtension();
+                $time = time();
+                $fileName = hash('ripemd128', $time).$ext;
+                $category->image = $fileName;
+                $req->categoryimage->storeAs('category/img', $fileName,'public');
            }
            $category->save();
            $req->session()->flash('categoryEdit', 'The category is edited ssuccessfully!');

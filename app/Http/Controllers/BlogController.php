@@ -37,11 +37,10 @@ class BlogController extends Controller
     {
         if(Auth::check()) {
             $req->validate([
-                'title' => 'required | regex:/^[a-zA-Z0-9\s]*$/ | min:20',
-                'content' => 'required | min:100',
+                'title' => 'required',
+                'content' => 'required',
                 'blogimage' => 'required | mimes:jpg,jpeg,png,bmp,tiff | max:4096',
             ],$messages = [
-                'regex' => 'Use alphabates and numbers only',   
                 'mimes' => 'Please insert image only',
                 'max'   => 'Image should be less than 4 MB'
             ]);
@@ -50,8 +49,12 @@ class BlogController extends Controller
             $blog->title = $req->input('title');
             $blog->content = $req->input('content');
             if($req->hasFile('blogimage')) {
-                $req->blogimage->store('blog/img', 'public');
-                $blog->image = $req->blogimage->hashName();
+                $ext = $req->blogimage->getClientOriginalExtension();
+                $time = time();
+                $fileName = hash('ripemd128', $time).$ext;
+                $blog->image = $fileName;
+                $req->blogimage->storeAs('blog/img', $fileName,'public');
+                
             } else {
                 $blog->image = NULL;
             }
@@ -69,11 +72,10 @@ class BlogController extends Controller
     public function update(request $req) {
         if(Auth::check()) {
             $req->validate([
-                'title' => 'required | regex:/^[a-zA-Z0-9\s]*$/ | min:20',
-                'content' => 'required | min:100',
+                'title' => 'required',
+                'content' => 'required',
                 'blogimage' => 'mimes:jpg,jpeg,png,bmp,tiff | max:4096',
             ],$messages = [
-                'regex' => 'Use alphabates and numbers only',   
                 'mimes' => 'Please insert image only',
                 'max'   => 'Image should be less than 4 MB'
             ]);

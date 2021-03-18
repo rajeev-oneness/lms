@@ -49,9 +49,9 @@
             </div>
         </div>
         <!-- /.card-header -->
-        <div class="card-body">
-          <table class="table table-bordered text-center">
-            <thead>
+        <div class="card-body table-responsive table-striped">
+          <table class="table text-center table-hover">
+            <thead class="thead-dark">
               <tr>
                 <th>#</th>
                 <th width="80%">Image</th>

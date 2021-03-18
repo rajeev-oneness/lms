@@ -37,12 +37,11 @@ class TestimonialController extends Controller
    {
        if(Auth::check()) {
         $req->validate([
-            'name' => 'required | regex:/^[a-zA-Z0-9\s]*$/ | min:5 | max:250',
-            'title' => 'required | regex:/^[a-zA-Z\s]*$/ | min:20 | max:250',
-            'content' => 'required | min:100',
+            'name' => 'required | max:250',
+            'title' => 'required | max:250',
+            'content' => 'required',
             'testimonialimage' => 'required | mimes:jpg,jpeg,png,bmp,tiff | max:4096',
-        ],$messages = [
-            'regex' => 'Use alphabates only',   
+        ],$messages = [ 
             'mimes' => 'Please insert image only',
             'max'   => 'Image should be less than 4 MB'
         ]);
@@ -51,8 +50,11 @@ class TestimonialController extends Controller
            $testimonial->title = $req->input('title');
            $testimonial->content = $req->input('content');
            if($req->hasFile('testimonialimage')) {
-               $req->testimonialimage->store('testimonial/img', 'public');
-               $testimonial->image = $req->testimonialimage->hashName();
+                $ext = $req->testimonialimage->getClientOriginalExtension();
+                $time = time();
+                $fileName = hash('ripemd128', $time).$ext;
+                $testimonial->image = $fileName;
+                $req->testimonialimage->storeAs('testimonial/img', $fileName,'public');
            }
            $testimonial->save();
            $req->session()->flash('testiAdd', 'The Testimonial is added ssuccessfully!');
@@ -68,12 +70,11 @@ class TestimonialController extends Controller
    public function update(request $req) {
        if(Auth::check()) {
         $req->validate([
-            'name' => 'required | regex:/^[a-zA-Z0-9\s]*$/ | min:5 | max:250',
-            'title' => 'required | regex:/^[a-zA-Z\s]*$/ | min:20 | max:250',
-            'content' => 'required | min:100',
+            'name' => 'required | max:250',
+            'title' => 'required | max:250',
+            'content' => 'required',
             'testimonialimage' => 'mimes:jpg,jpeg,png,bmp,tiff | max:4096',
-        ],$messages = [
-            'regex' => 'Use alphabates only',   
+        ],$messages = [ 
             'mimes' => 'Please insert image only',
             'max'   => 'Image should be less than 4 MB'
         ]);
@@ -82,8 +83,11 @@ class TestimonialController extends Controller
            $testimonial->title = $req->input('title');
            $testimonial->content = $req->input('content');
            if($req->hasFile('testimonialimage')) {
-               $req->testimonialimage->store('testimonial/img', 'public');
-               $testimonial->image = $req->testimonialimage->hashName();
+                $ext = $req->testimonialimage->getClientOriginalExtension();
+                $time = time();
+                $fileName = hash('ripemd128', $time).$ext;
+                $testimonial->image = $fileName;
+                $req->testimonialimage->storeAs('testimonial/img', $fileName,'public');
            }
            $testimonial->save();
            $req->session()->flash('testiEdit', 'The testimonial is edited ssuccessfully!');

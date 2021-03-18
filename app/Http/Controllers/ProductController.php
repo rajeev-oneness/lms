@@ -39,32 +39,32 @@ class ProductController extends Controller
     {
         if(Auth::check()) {
             $req->validate([
-                'name' => 'required | min:20',
-                'category_id' => 'required',
-                'duration' => 'required',
-                'no_of_lectures' => 'required',
-                'number_of_views' => 'required',
-                'validity_of_course' => 'required',
-                'intro_video_link' => 'required | max:102400',
-                'images' => 'required | max:4096',
-                'description' => 'required | min:100',
-                'mode' => 'required',
-                'language' => 'required',
-                'system_specification' => 'required | min:20',
+                'name' => 'required',
+                // 'category_id' => 'required',
+                // 'duration' => 'required',
+                // 'no_of_lectures' => 'required',
+                // 'number_of_views' => 'required',
+                // 'validity_of_course' => 'required',
+                // 'intro_video_link' => 'required | max:102400',
+                // 'images' => 'required | max:4096',
+                // 'description' => 'required | min:100',
+                // 'mode' => 'required',
+                // 'language' => 'required',
+                // 'system_specification' => 'required | min:20',
                 'price' => 'required',
-                'offered_price' => 'required',
-                'course_queries' => 'required | min:20',
-                'study_materials' => 'required | max:4096',
-                'technical_support' => 'required | regex:/^[a-zA-Z0-9\s]*$/'
+                // 'offered_price' => 'required',
+                // 'course_queries' => 'required | min:20',
+                // 'study_materials' => 'required | max:4096',
+                // 'technical_support' => 'required | regex:/^[a-zA-Z0-9\s]*$/'
                 
             ],$messages = [
-                'regex' => 'Use alphabates and numbers only',   
-                'images.mimes' => 'Please insert image only',
-                'images.max'   => 'Image should be less than 4 MB',
-                'intro_video_link.mimes' => 'Please insert video only',
-                'intro_video_link.max'   => 'Image should be less than 100 MB',
-                'study_materials.mimes' => 'Please insert document and photos only',
-                'study_materials.max'   => 'File should be less than 4 MB'
+                // 'regex' => 'Use alphabates and numbers only',   
+                // 'images.mimes' => 'Please insert image only',
+                // 'images.max'   => 'Image should be less than 4 MB',
+                // 'intro_video_link.mimes' => 'Please insert video only',
+                // 'intro_video_link.max'   => 'Image should be less than 100 MB',
+                // 'study_materials.mimes' => 'Please insert document and photos only',
+                // 'study_materials.max'   => 'File should be less than 4 MB'
             ]);
             
             $product = new Product;
@@ -75,8 +75,13 @@ class ProductController extends Controller
             $product->number_of_views = $req->input('number_of_views');
             $product->validity_of_course = $req->input('validity_of_course');
             if($req->hasFile('intro_video_link')) {
-                $req->intro_video_link->store('product/intro', 'public');
-                $product->intro_video_link = $req->intro_video_link->hashName();
+                // $req->intro_video_link->store('product/intro', 'public');
+                // $product->intro_video_link = $req->intro_video_link->hashName();
+                $ext = $req->intro_video_link->getClientOriginalExtension();
+                $time = time();
+                $fileName = hash('ripemd128', $time).'.'.$ext;
+                $product->intro_video_link = $fileName;
+                $req->intro_video_link->storeAs('product/intro', $fileName,'public');
             }
             if(count($req->images) > 0) { 
                 foreach($req->images as $image) {
@@ -91,7 +96,11 @@ class ProductController extends Controller
             $product->language = implode(',', $req->input('language'));
             $product->system_specification = $req->input('system_specification');
             $product->price = $req->input('price');
-            $product->offered_price = $req->input('offered_price');
+            if($req->input('offered_price')!=null) {
+                $product->offered_price = $req->input('offered_price');
+            } else {
+                $product->offered_price = "";
+            }
             $product->course_queries = $req->input('course_queries');
             if(count($req->study_materials) > 0) { 
                 foreach($req->study_materials as $study_material) {
@@ -122,32 +131,32 @@ class ProductController extends Controller
     public function update(request $req) {
         if(Auth::check()) {
             $req->validate([
-                'name' => 'required | min:20',
-                'category_id' => 'required',
-                'duration' => 'required',
-                'no_of_lectures' => 'required',
-                'number_of_views' => 'required',
-                'validity_of_course' => 'required',
-                'intro_video_link' => 'required | max:102400',
-                'images' => 'required | max:4096',
-                'description' => 'required | min:100',
-                'mode' => 'required',
-                'language' => 'required',
-                'system_specification' => 'required | min:20',
+                'name' => 'required',
+                // 'category_id' => 'required',
+                // 'duration' => 'required',
+                // 'no_of_lectures' => 'required',
+                // 'number_of_views' => 'required',
+                // 'validity_of_course' => 'required',
+                // 'intro_video_link' => 'required | max:102400',
+                // 'images' => 'required | max:4096',
+                // 'description' => 'required | min:100',
+                // 'mode' => 'required',
+                // 'language' => 'required',
+                // 'system_specification' => 'required | min:20',
                 'price' => 'required',
-                'offered_price' => 'required',
-                'course_queries' => 'required | min:20',
-                'study_materials' => 'required | max:4096',
-                'technical_support' => 'required | regex:/^[a-zA-Z0-9\s]*$/'
+                // 'offered_price' => 'required',
+                // 'course_queries' => 'required | min:20',
+                // 'study_materials' => 'required | max:4096',
+                // 'technical_support' => 'required | regex:/^[a-zA-Z0-9\s]*$/'
                 
             ],$messages = [
-                'regex' => 'Use alphabates and numbers only',   
-                'images.mimes' => 'Please insert image only',
-                'images.max'   => 'Image should be less than 4 MB',
-                'intro_video_link.mimes' => 'Please insert video only',
-                'intro_video_link.max'   => 'Image should be less than 100 MB',
-                'study_materials.mimes' => 'Please insert document and photos only',
-                'study_materials.max'   => 'File should be less than 4 MB'
+                // 'regex' => 'Use alphabates and numbers only',   
+                // 'images.mimes' => 'Please insert image only',
+                // 'images.max'   => 'Image should be less than 4 MB',
+                // 'intro_video_link.mimes' => 'Please insert video only',
+                // 'intro_video_link.max'   => 'Image should be less than 100 MB',
+                // 'study_materials.mimes' => 'Please insert document and photos only',
+                // 'study_materials.max'   => 'File should be less than 4 MB'
             ]);
             
             $product = Product::find($req->input('productId'));
@@ -158,8 +167,13 @@ class ProductController extends Controller
             $product->number_of_views = $req->input('number_of_views');
             $product->validity_of_course = $req->input('validity_of_course');
             if($req->hasFile('intro_video_link')) {
-                $req->intro_video_link->store('product/intro', 'public');
-                $product->intro_video_link = $req->intro_video_link->hashName();
+                // $req->intro_video_link->store('product/intro', 'public');
+                // $product->intro_video_link = $req->intro_video_link->hashName();
+                $ext = $req->intro_video_link->getClientOriginalExtension();
+                $time = time();
+                $fileName = hash('ripemd128', $time).'.'.$ext;
+                $product->intro_video_link = $fileName;
+                $req->intro_video_link->storeAs('product/intro', $fileName,'public');
             }
             if($req->hasFile('images')) {
                 if(count($req->images) > 0) { 
@@ -176,7 +190,11 @@ class ProductController extends Controller
             $product->language = implode(',', $req->input('language'));
             $product->system_specification = $req->input('system_specification');
             $product->price = $req->input('price');
-            $product->offered_price = $req->input('offered_price');
+            if($req->input('offered_price')!=null) {
+                $product->offered_price = $req->input('offered_price');
+            } else {
+                $product->offered_price = "";
+            }
             $product->course_queries = $req->input('course_queries');
             if($req->hasFile('study_materials')) {
                 if(count($req->study_materials) > 0) { 
